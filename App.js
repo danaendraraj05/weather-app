@@ -46,7 +46,41 @@ const fetchWeather = async () => {
           <Text style={styles.city}>{weather.name}</Text>
           <Text style={styles.temp}>{weather.main.temp}°C</Text>
           <Text>{weather.weather[0].description}</Text>
-        </View>
+
+          <View style={styles.grid}>
+            <View style={styles.gridItem}>
+              <Text style={styles.emoji}>🌡️</Text>
+              <Text style={styles.label}>Feels like</Text>
+              <Text style={styles.value}>{weather.main.feels_like}°C</Text>
+            </View>
+            <View style={styles.gridItem}>
+              <Text style={styles.emoji}>💧</Text>
+              <Text style={styles.label}>Humidity</Text>
+              <Text style={styles.value}>{weather.main.humidity}%</Text>
+            </View>
+            <View style={styles.gridItem}>
+              <Text style={styles.emoji}>📈</Text>
+              <Text style={styles.label}>Pressure</Text>
+              <Text style={styles.value}>{weather.main.pressure} hPa</Text>
+            </View>
+            <View style={styles.gridItem}>
+              <Text style={styles.emoji}>🌬️</Text>
+              <Text style={styles.label}>Wind</Text>
+              <Text style={styles.value}>{weather.wind.speed} m/s</Text>
+            </View>
+            <View style={styles.gridItem}>
+              <Text style={styles.emoji}>☁️</Text>
+              <Text style={styles.label}>Clouds</Text>
+              <Text style={styles.value}>{weather.clouds.all}%</Text>
+            </View>
+            <View style={styles.gridItem}>
+              <Text style={styles.emoji}>👀</Text>
+              <Text style={styles.label}>Visibility</Text>
+              <Text style={styles.value}>{weather.visibility / 1000} km</Text>
+            </View>
+          </View>
+
+      </View>
       )}
     </View>
   );
@@ -63,7 +97,54 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: 'white',
   },
-  result: { marginTop: 30, alignItems: 'center' },
   city: { fontSize: 22, fontWeight: 'bold' },
   temp: { fontSize: 40, fontWeight: '600', marginVertical: 10 },
+  result: {
+    marginTop: 30,
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 10,
+    elevation: 4,
+  },
+  desc: {
+    textTransform: 'capitalize',
+    marginBottom: 10,
+    color: '#555',
+  },
+  grid: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between',
+  marginTop: 20,
+  },
+  gridItem: {
+    width: '30%',
+    backgroundColor: '#e8f4f8',
+    paddingVertical: 10,
+    marginVertical: 8,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  emoji: {
+    fontSize: 24,
+  },
+  label: {
+    fontSize: 14,
+    color: '#555',
+    marginTop: 4,
+  },
+  value: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+
+
 });
