@@ -1,13 +1,17 @@
 // App.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, Button, Alert, StyleSheet, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import Constants from 'expo-constants';
+import * as Location from 'expo-location';
+
 
 export default function App() {
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const [locationLoading, setLocationLoading] = useState(false);
 
   const API_KEY = Constants.expoConfig.extra.WEATHER_API_KEY; 
 
@@ -27,6 +31,46 @@ const fetchWeather = async () => {
   }
 };
 
+const handleUseCurrentLocation = async () => {
+  try {
+    setLocationLoading(true);
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'Location permission is required.');
+      setLocationLoading(false);
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    const { latitude, longitude } = location.coords;
+
+    fetchWeatherByCoordinates(latitude, longitude);
+  } catch (error) {
+    Alert.alert('Error', 'Could not fetch location.');
+    console.error(error);
+  } finally {
+    setLocationLoading(false);
+  }
+};
+
+const fetchWeatherByCoordinates = async (lat, lon) => {
+  try {
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
+    );
+    const data = await response.json();
+
+    if (data.cod === 200) {
+      setWeather(data);
+    } else {
+      Alert.alert('Error', 'City not found.');
+    }
+  } catch (err) {
+    console.error(err);
+    Alert.alert('Error', 'Failed to fetch weather.');
+  }
+};
+
 
   return (
     <View style={styles.container}>
@@ -37,7 +81,15 @@ const fetchWeather = async () => {
         onChangeText={setCity}
         style={styles.input}
       />
-      <Button title="Get Weather" onPress={fetchWeather} />
+      <View style={styles.buttonContainer}>
+        <Button title="Get Weather" onPress={fetchWeather} />
+        <View style={{ height: 10 }} />
+        <Button
+          title={locationLoading ? 'Locating...' : 'Use Current Location'}
+          onPress={handleUseCurrentLocation}
+          disabled={locationLoading}
+        />
+      </View>
 
       {loading && <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />}
 
@@ -145,6 +197,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginTop: 2,
   },
+  buttonContainer: {
+  marginVertical: 10,
+},
 
 
 });
